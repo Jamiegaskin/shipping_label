@@ -1,5 +1,5 @@
 easypost = Easypost('3R57pd18lC0hrVu7kL3nUg');
-url = ""
+Fiber = Npm.require('fibers');
 Meteor.methods({
 	submit: function(toName, toCo, toAddress, toAddress2, toCity, toState, toZip, fromName, fromCo, fromAddress, fromAddress2, fromCity, fromState, fromZip, length, width, height, weight) {
 		var toAddress = {
@@ -27,7 +27,7 @@ Meteor.methods({
 		    height: height,
 		    weight: weight
 		};
-
+		var labelID = Label.findOne()._id;
 		// create shipment
 		easypost.Shipment.create({
 		    to_address: toAddress,
@@ -38,9 +38,8 @@ Meteor.methods({
 		    shipment.buy({rate: shipment.lowestRate(['USPS'], services=['First'])}, function(err, shipment) {
 		        console.log(shipment.tracking_code);
 		        console.log(shipment.postage_label.label_url);
-		        url = shipment.postage_label.label_url;
+		        Fiber(function() {Label.update({_id: labelID}, {$set: {currentLabel: shipment.postage_label.label_url}});}).run();
 		    });
 		});
-		return url;
 	}
 });

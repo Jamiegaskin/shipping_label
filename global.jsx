@@ -1,4 +1,8 @@
 Global = React.createClass({
+    mixins: [ReactMeteorData],
+    getMeteorData: function() {
+        return {label: Label.findOne().currentLabel};
+    },
     submit: function() {
         Meteor.call("submit",
             document.getElementById("toName").value,
@@ -18,16 +22,13 @@ Global = React.createClass({
             parseFloat(document.getElementById("length").value),
             parseFloat(document.getElementById("width").value),
             parseFloat(document.getElementById("height").value),
-            parseFloat(document.getElementById("weight").value),
-            function(err, url) {
-                if (err)
-                    console.log(err);
-                console.log(url);
-                window.open(url);
-            }
+            parseFloat(document.getElementById("weight").value)
         )
     },
     render: function() {
+        if (this.data.label) {
+            window.open(this.data.label)
+        }
         return(
             <div>
                 <h1>To:</h1>
